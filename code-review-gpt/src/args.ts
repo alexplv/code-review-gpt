@@ -49,7 +49,7 @@ export const getYargs = async (): Promise<ReviewArgs> => {
     .option("model", {
       description: "The model to use for generating the review.",
       type: "string",
-      default: "gpt-4",
+      default: "gpt-3.5-turbo-16k",
     })
     .option("reviewType", {
       description:
@@ -80,6 +80,11 @@ export const getYargs = async (): Promise<ReviewArgs> => {
       choices: ["openai", "bedrock"],
       type: "string",
       default: "openai",
+    })
+    .option("sourcePath", {
+      description: "Path to the directory containing the files to review",
+      type: "string",
+      default: "./",
     })
     .command("review", "Review the pull request.")
     .command("configure", "Configure the script.")

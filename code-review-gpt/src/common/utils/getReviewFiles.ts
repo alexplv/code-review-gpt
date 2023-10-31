@@ -2,7 +2,8 @@ import { ReviewFile } from "../types";
 
 export const getReviewFiles = async (
   isCi: string | undefined,
-  remotePullRequest: string | undefined
+  remotePullRequest: string | undefined,
+  sourcePath: string | undefined 
 ): Promise<ReviewFile[]> => {
   if (remotePullRequest !== undefined) {
     const { getRemotePullRequestFiles } = await import(
@@ -13,6 +14,6 @@ export const getReviewFiles = async (
   } else {
     const { getFilesWithChanges } = await import("../git/getFilesWithChanges");
 
-    return await getFilesWithChanges(isCi);
+    return await getFilesWithChanges(isCi, sourcePath);
   }
 };

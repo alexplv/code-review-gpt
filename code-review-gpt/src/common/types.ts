@@ -36,6 +36,7 @@ export enum PlatformOptions {
 
 export type ReviewArgs = {
   [x: string]: unknown;
+  sourcePath: string | undefined;
   ci: string | undefined;
   setupTarget: string;
   commentPerFile: boolean;

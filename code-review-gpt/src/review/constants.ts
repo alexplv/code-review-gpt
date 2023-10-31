@@ -40,6 +40,7 @@ export const languageMap: { [key: string]: string } = {
   ".kt": "Kotlin",
   ".kts": "Kotlin",
   ".java": "Java",
+  ".swift": "Swift",
 };
 
 export const supportedFiles = new Set(Object.keys(languageMap));
