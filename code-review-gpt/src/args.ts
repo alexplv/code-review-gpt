@@ -26,8 +26,8 @@ export const getYargs = async (): Promise<ReviewArgs> => {
   const argv = yargs
     .option("ci", {
       description:
-        "Indicates that the script is running on a CI environment. Specifies which platform the script is running on, 'github' or 'gitlab'. Defaults to 'github'.",
-      choices: ["github", "gitlab"],
+        "Indicates that the script is running on a CI environment. Specifies which platform the script is running on, 'github', 'gitlab' or 'bitbucket'. Defaults to 'github'.",
+      choices: ["github", "gitlab", "bitbucket"],
       type: "string",
       coerce: (arg: string | undefined) => {
         return arg || "github";
