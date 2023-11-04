@@ -80,7 +80,6 @@ export const review = async (
   if (isCi === PlatformOptions.GITLAB) {
     await commentOnPRGitlab(response, signOff);
   }
-
   if (isCi === PlatformOptions.BITBUCKET) {
     await commentOnPRBitbucket(response, signOff);
   }
