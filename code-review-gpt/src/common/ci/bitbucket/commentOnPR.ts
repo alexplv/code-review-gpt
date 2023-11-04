@@ -1,8 +1,8 @@
 
 import { Bitbucket, Params, Schema } from 'bitbucket';
 
-import { logger } from "../../utils/logger";
 import { getBitbucketEnvVariables } from '../../../config';
+import { logger } from "../../utils/logger";
 
 /**
  * Publish a comment on the pull request. If the bot has already commented (i.e. a comment with the same sign off exists), update the comment instead of creating a new one.
@@ -22,11 +22,14 @@ export const commentOnPR = async (
       bitbucketRepoSlug,
       bitbucketPullRequestId
     } = getBitbucketEnvVariables();
+
+    const formattedComment = `${comment}\n\n---\n\n${signOff}`;
+
 		logger.info(`bitbucketToken: ${bitbucketToken}`);
     logger.info(`bitbucketWorkspace: ${bitbucketWorkspace}`);
     logger.info(`bitbucketRepoSlug: ${bitbucketRepoSlug}`);
     logger.info(`bitbucketPullRequestId: ${bitbucketPullRequestId}`);
-    logger.info(`comment: ${comment}`);
+    logger.info(`comment: ${formattedComment}`);
 
     // Create a Bitbucket instance
     const bitbucket = new Bitbucket({
@@ -35,82 +38,54 @@ export const commentOnPR = async (
       }
     });
 
-    const pullRequestResponse = await bitbucket.pullrequests.get({
+    const {data: commentsList} = await bitbucket.pullrequests.listComments({
       pull_request_id: Number(bitbucketPullRequestId),
       repo_slug: bitbucketRepoSlug,
       workspace: bitbucketWorkspace
     });
 
-    const pullRequestObject: Schema.Pullrequest = pullRequestResponse.data;
+    let botComment: Schema.PullrequestComment | undefined;
+    if (commentsList.values) {
+      botComment = commentsList.values.find((comment) => {
+        return comment.content?.raw && comment.content.raw.includes(signOff);
+      });
+    }
 
-    logger.info(`pullRequestObject: ${pullRequestObject}`);
+    console.log(commentsList.values);
+    console.log(botComment);
 
     const commentObject: Schema.PullrequestComment = {
       content: {
-        raw: comment
+        raw: formattedComment
       },
       type: ''
     };
 
     delete (commentObject as any).type;
 
-    const commentCreateObject: Params.PullrequestsCreateComment = {
-      _body: commentObject,
-      pull_request_id: Number(bitbucketPullRequestId),
-      repo_slug: bitbucketRepoSlug,
-      workspace: bitbucketWorkspace
+    if (botComment && botComment.id) {
+      logger.info(`Updating a comment on PR`);
+      const response = await bitbucket.repositories.updatePullRequestComment({
+        _body: commentObject,
+        comment_id: botComment.id,
+        pull_request_id: Number(bitbucketPullRequestId),
+        repo_slug: bitbucketRepoSlug,
+        workspace: bitbucketWorkspace
+      });
+      logger.info(`response: ${response.data}`);
+    } else {
+      logger.info(`Posting a new comment to PR `);
+      const commentCreateObject: Params.PullrequestsCreateComment = {
+        _body: commentObject,
+        pull_request_id: Number(bitbucketPullRequestId),
+        repo_slug: bitbucketRepoSlug,
+        workspace: bitbucketWorkspace
+      }
+      const response = await bitbucket.repositories.createPullRequestComment(commentCreateObject);
+      logger.info(`response: ${response.data}`);
     }
-
-    const response = await bitbucket.repositories.createPullRequestComment(commentCreateObject);
-
-    logger.info(`response: ${response.data}`);
   } catch (error) {
     logger.error(`Failed to comment on PR: ${JSON.stringify(error)}`);
     throw error;
   }
-//   try {
-//     const githubToken = getToken();
-//     const { payload, issue } = context;
-
-//     if (!payload.pull_request) {
-//       logger.warn("Not a pull request. Skipping commenting on PR...");
-
-//       return;
-//     }
-
-//     const octokit = getOctokit(githubToken);
-//     const { owner, repo, number: pull_number } = issue;
-
-//     const { data: comments } = await octokit.rest.issues.listComments({
-//       owner,
-//       repo,
-//       issue_number: pull_number,
-//     });
-
-//     const botComment = comments.find(
-//       (comment) => comment.body?.includes(signOff)
-//     );
-
-//     const botCommentBody = `${comment}\n\n---\n\n${signOff}`;
-
-//     if (botComment) {
-//       await octokit.rest.issues.updateComment({
-//         owner,
-//         repo,
-//         comment_id: botComment.id,
-//         body: botCommentBody,
-//       });
-//     } else {
-//       // If the bot has not commented yet, create a new comment
-//       await octokit.rest.issues.createComment({
-//         owner,
-//         repo,
-//         issue_number: pull_number,
-//         body: botCommentBody,
-//       });
-//     }
-//   } catch (error) {
-//     logger.error(`Failed to comment on PR: ${JSON.stringify(error)}`);
-//     throw error;
-//   }
 };
