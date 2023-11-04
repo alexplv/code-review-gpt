@@ -36,7 +36,7 @@ The filenames and file contents to review are provided below as a list of JSON o
 export const completionPrompt = `
 You are a senior developer and have just reviewed a pull request. This was your feedback:
 {feedback}
-Please summarise the review using 3 emojis.
+Please summarize the review using 3 emojis.
 `;
 
 export const demoPrompt = `You are an senior developer, your task is to review a code snippet.

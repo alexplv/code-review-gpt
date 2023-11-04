@@ -12,7 +12,7 @@ export const getReviewFiles = async (
       case PlatformOptions.GITHUB:
         return await getGithubRemotePullRequestFiles(remotePullRequest);
       case PlatformOptions.BITBUCKET:
-        return await getBitbucketRemotePullRequestFiles(remotePullRequest);
+        return await getBitbucketRemotePullRequestFiles();
       default:
         throw new Error(
           `Failed to get remote Pull Request files: this CI does not support remote Pull Request files`

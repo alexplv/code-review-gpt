@@ -57,6 +57,10 @@ export const review = async (
     reviewType
   );
 
+if (prompts.length === 0) {
+  throw new Error("No prompt to review, finishing review now.");
+}
+
   logger.debug(`Prompts used:\n ${prompts.toString()}`);
 
   const { markdownReport: response, feedbacks } = await askAI(
@@ -81,7 +85,7 @@ export const review = async (
     await commentOnPRGitlab(response, signOff);
   }
   if (isCi === PlatformOptions.BITBUCKET) {
-    await commentOnPRBitbucket(response, signOff);
+    await commentOnPRBitbucket(response, signOff, modelName);
   }
 
   return response;

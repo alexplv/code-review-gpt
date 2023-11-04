@@ -13,7 +13,8 @@ import { logger } from "../../utils/logger";
  */
 export const commentOnPR = async (
   comment: string,
-  signOff: string
+  signOff: string,
+  modelName: string
 ): Promise<void> => {
 	try {
 		const {
@@ -23,13 +24,13 @@ export const commentOnPR = async (
       bitbucketPullRequestId
     } = getBitbucketEnvVariables();
 
-    const formattedComment = `${comment}\n\n---\n\n${signOff}`;
+    const formattedComment = `${comment}\n\n---\n\n${signOff}. Model used: ${modelName}`;
 
-		logger.info(`bitbucketToken: ${bitbucketToken}`);
-    logger.info(`bitbucketWorkspace: ${bitbucketWorkspace}`);
-    logger.info(`bitbucketRepoSlug: ${bitbucketRepoSlug}`);
-    logger.info(`bitbucketPullRequestId: ${bitbucketPullRequestId}`);
-    logger.info(`comment: ${formattedComment}`);
+		logger.debug(`bitbucketToken: ${bitbucketToken}`);
+    logger.debug(`bitbucketWorkspace: ${bitbucketWorkspace}`);
+    logger.debug(`bitbucketRepoSlug: ${bitbucketRepoSlug}`);
+    logger.debug(`bitbucketPullRequestId: ${bitbucketPullRequestId}`);
+    logger.debug(`comment: ${formattedComment}`);
 
     // Create a Bitbucket instance
     const bitbucket = new Bitbucket({
@@ -38,7 +39,7 @@ export const commentOnPR = async (
       }
     });
 
-    const {data: commentsList} = await bitbucket.pullrequests.listComments({
+    const { data: commentsList } = await bitbucket.pullrequests.listComments({
       pull_request_id: Number(bitbucketPullRequestId),
       repo_slug: bitbucketRepoSlug,
       workspace: bitbucketWorkspace
@@ -51,8 +52,7 @@ export const commentOnPR = async (
       });
     }
 
-    console.log(commentsList.values);
-    console.log(botComment);
+    console.debug(botComment);
 
     const commentObject: Schema.PullrequestComment = {
       content: {
@@ -64,25 +64,27 @@ export const commentOnPR = async (
     delete (commentObject as any).type;
 
     if (botComment && botComment.id) {
+
       logger.info(`Updating a comment on PR`);
-      const response = await bitbucket.repositories.updatePullRequestComment({
+
+      await bitbucket.repositories.updatePullRequestComment({
         _body: commentObject,
         comment_id: botComment.id,
         pull_request_id: Number(bitbucketPullRequestId),
         repo_slug: bitbucketRepoSlug,
         workspace: bitbucketWorkspace
       });
-      logger.info(`response: ${response.data}`);
     } else {
-      logger.info(`Posting a new comment to PR `);
+
+      logger.info(`Posting a new comment to PR`);
+
       const commentCreateObject: Params.PullrequestsCreateComment = {
         _body: commentObject,
         pull_request_id: Number(bitbucketPullRequestId),
         repo_slug: bitbucketRepoSlug,
         workspace: bitbucketWorkspace
       }
-      const response = await bitbucket.repositories.createPullRequestComment(commentCreateObject);
-      logger.info(`response: ${response.data}`);
+      await bitbucket.repositories.createPullRequestComment(commentCreateObject);
     }
   } catch (error) {
     logger.error(`Failed to comment on PR: ${JSON.stringify(error)}`);

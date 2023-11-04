@@ -4,9 +4,7 @@ import { BitbucketClient } from '../../clients/bitbucketClient';
 import { getBitbucketEnvVariables } from '../../../config';
 import { logger } from "../../utils/logger";
 
-export const getRemotePullRequestFiles = async (
-  remotePullRequest: string
-): Promise<ReviewFile[]> => {
+export const getRemotePullRequestFiles = async (): Promise<ReviewFile[]> => {
 
 	try {
 		const {
@@ -16,10 +14,10 @@ export const getRemotePullRequestFiles = async (
 			bitbucketPullRequestId
 		} = getBitbucketEnvVariables();
 
-		logger.info(`bitbucketToken: ${bitbucketToken}`);
-		logger.info(`bitbucketWorkspace: ${bitbucketWorkspace}`);
-		logger.info(`bitbucketRepoSlug: ${bitbucketRepoSlug}`);
-		logger.info(`bitbucketPullRequestId: ${bitbucketPullRequestId}`);
+		logger.debug(`bitbucketToken: ${bitbucketToken}`);
+		logger.debug(`bitbucketWorkspace: ${bitbucketWorkspace}`);
+		logger.debug(`bitbucketRepoSlug: ${bitbucketRepoSlug}`);
+		logger.debug(`bitbucketPullRequestId: ${bitbucketPullRequestId}`);
 
 		const client = new BitbucketClient(
 			bitbucketToken,
@@ -28,8 +26,6 @@ export const getRemotePullRequestFiles = async (
 			Number(bitbucketPullRequestId)
 		);
 		const files = client.fetchReviewFiles();
-
-		logger.info(`diff: ${JSON.stringify(files)}`);
 
 		return files
 	} catch (error) {

@@ -1,4 +1,5 @@
 import { PromptFile, ReviewFile } from "../../../../../common/types";
+import { logger } from "../../../../../common/utils/logger";
 
 const getChangedIndicesAndLength = (
   contentLines: string[],
@@ -129,6 +130,7 @@ export const createPromptFiles = (
       getChangedIndicesAndLength(contentLines, changedLinesArray);
 
     if (totalChangedLinesLength === 0) {
+      logger.info(`No changed lines found in the file ${file.fileName}, skipping it.`);
       return result;
     }
 

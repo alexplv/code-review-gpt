@@ -1,5 +1,5 @@
 export const signOff =
-  "#### Powered by [Code Review GPT](https://github.com/mattzcarey/code-review-gpt)";
+  "#### Code reviewed by OpenAI [GPT](https://github.com/alexplv/code-review-gpt)";
 
 export const modelInfo = [
   {
@@ -47,7 +47,7 @@ export const supportedFiles = new Set(Object.keys(languageMap));
 
 export const excludedKeywords = new Set(["types"]);
 
-export const maxFeedbackCount = 3;
+export const maxFeedbackCount = 10;
 
 //for cost optimized changed lines
 export const MAX_SURROUNDING_LINES = 5;

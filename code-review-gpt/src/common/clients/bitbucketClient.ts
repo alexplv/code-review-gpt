@@ -2,6 +2,7 @@ import { Bitbucket, Params, Schema, APIClient } from 'bitbucket';
 import { ReviewFile } from '../types';
 import { DiffStat } from './types';
 import { isEligibleForReview } from '../remote/github/isEligibleForReview';
+import { logger } from '../utils/logger';
 
 export class BitbucketClient {
 	private client: APIClient;
@@ -52,6 +53,8 @@ export class BitbucketClient {
 			reviewFiles.push(reviewFile);
 		}
 
+		logger.debug(`Files to review: ${reviewFiles.map((file) => file.fileName)}`);
+
 		return reviewFiles
 	}
 
@@ -73,7 +76,7 @@ export class BitbucketClient {
 	private async fetchPullRequestFileContent(url: string): Promise<string> {
 		const response: unknown = await this.client.request(`GET ${url}`);
 		if (isValidContentResponse(response)) {
-			return this.decodeBase64(response.data);
+			return response.data
 		} else {
 			throw new Error(
 				`Unexpected response from APIClient. Response was ${JSON.stringify(response)}.`
@@ -87,10 +90,6 @@ export class BitbucketClient {
 			diff.startsWith(`a/${filePath} `) || diff.startsWith(`b/${filePath} `)
 		);
 		return fileDiff || "";
-	}
-
-	private decodeBase64(encoded: string): string {
-		return Buffer.from(encoded, "base64").toString("utf-8");
 	}
 }
 
