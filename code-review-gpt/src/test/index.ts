@@ -2,6 +2,7 @@ import path from "path";
 
 import { commentOnPR as commentOnPRGitHub } from "../common/ci/github/commentOnPR";
 import { commentOnPR as commentOnPRGitLab } from "../common/ci/gitlab/commentOnPR";
+import { commentOnPR as commentOnPRBitbucket } from "../common/ci/bitbucket/commentOnPR";
 import AIModel from "../common/model/AIModel";
 import { getMaxPromptLength } from "../common/model/getMaxPromptLength";
 import { PlatformOptions, ReviewArgs } from "../common/types";
@@ -54,5 +55,9 @@ export const test = async (
 
   if (ci === PlatformOptions.GITLAB) {
     await commentOnPRGitLab(testSummary, signOff);
+  }
+
+  if (ci === PlatformOptions.BITBUCKET) {
+    await commentOnPRBitbucket(testSummary, signOff);
   }
 };

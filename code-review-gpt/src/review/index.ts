@@ -2,6 +2,7 @@
 import { commentOnPR as commentOnPRGithub } from "../common/ci/github/commentOnPR";
 import { commentPerFile } from "../common/ci/github/commentPerFile";
 import { commentOnPR as commentOnPRGitlab } from "../common/ci/gitlab/commentOnPR";
+import { commentOnPR as commentOnPRBitbucket } from "../common/ci/bitbucket/commentOnPR";
 import { getMaxPromptLength } from "../common/model/getMaxPromptLength";
 import { PlatformOptions, ReviewArgs, ReviewFile } from "../common/types";
 import { logger } from "../common/utils/logger";
@@ -56,6 +57,10 @@ export const review = async (
     reviewType
   );
 
+if (prompts.length === 0) {
+  throw new Error("No prompt to review, finishing review now.");
+}
+
   logger.debug(`Prompts used:\n ${prompts.toString()}`);
 
   const { markdownReport: response, feedbacks } = await askAI(
@@ -78,6 +83,9 @@ export const review = async (
   }
   if (isCi === PlatformOptions.GITLAB) {
     await commentOnPRGitlab(response, signOff);
+  }
+  if (isCi === PlatformOptions.BITBUCKET) {
+    await commentOnPRBitbucket(response, signOff, modelName);
   }
 
   return response;

@@ -5,25 +5,26 @@ import { getGitHubEnvVariables, getGitLabEnvVariables } from "../../config";
 import { PlatformOptions } from "../types";
 
 export const getChangedFilesNamesCommand = (
-  isCi: string | undefined
+  isCi: string | undefined,
+  sourcePath: string | undefined = './'
 ): string => {
   if (isCi === PlatformOptions.GITHUB) {
     const { githubSha, baseSha } = getGitHubEnvVariables();
-
-    return `git diff --name-only --diff-filter=AMRT ${baseSha} ${githubSha}`;
   } else if (isCi === PlatformOptions.GITLAB) {
+    return `git diff --name-only --diff-filter=AMRT ${baseSha} ${githubSha}`;
     const { gitlabSha, mergeRequestBaseSha } = getGitLabEnvVariables();
-
     return `git diff --name-only --diff-filter=AMRT ${mergeRequestBaseSha} ${gitlabSha}`;
+  } else if (sourcePath !== undefined) {
+    return `git -C ${sourcePath} diff --name-only --diff-filter=AMRT --cached`;
   }
-
   return "git diff --name-only --diff-filter=AMRT --cached";
 };
 
 export const getChangedFilesNames = async (
-  isCi: string | undefined
+  isCi: string | undefined,
+  sourcePath: string | undefined = './'
 ): Promise<string[]> => {
-  const commandString = getChangedFilesNamesCommand(isCi);
+  const commandString = getChangedFilesNamesCommand(isCi, sourcePath);
 
   return new Promise((resolve, reject) => {
     exec(commandString, (error, stdout, stderr) => {
@@ -35,7 +36,7 @@ export const getChangedFilesNames = async (
         const files = stdout
           .split("\n")
           .filter((fileName) => fileName.trim() !== "")
-          .map((fileName) => join(process.cwd(), "..", fileName.trim()));
+          .map((fileName) => join(sourcePath, fileName.trim()));
         resolve(files);
       }
     });

@@ -32,10 +32,12 @@ export type IFeedback = {
 export enum PlatformOptions {
   GITHUB = "github",
   GITLAB = "gitlab",
+  BITBUCKET = "bitbucket",
 }
 
 export type ReviewArgs = {
   [x: string]: unknown;
+  sourcePath: string | undefined;
   ci: string | undefined;
   setupTarget: string;
   commentPerFile: boolean;

@@ -1,4 +1,4 @@
-import { PullRequestIdentifier } from './types';
+import { PullRequestIdentifier } from './github/types';
 
 export const extractPullRequestIdentifier = (identifier: string): PullRequestIdentifier => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

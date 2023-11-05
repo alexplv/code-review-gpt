@@ -46,7 +46,8 @@
     "octokit": "^3.1.0",
     "ts-retry": "^4.2.1",
     "tslog": "^4.8.2",
-    "yargs": "^17.7.2"
+    "yargs": "^17.7.2",
+    "bitbucket": "^2.11.0"
   },
   "devDependencies": {
     "@types/inquirer": "^9.0.3",

@@ -1,6 +1,6 @@
 import { ReviewFile } from "../../types";
 import { GitHubRESTClient } from "./GitHubRESTClient";
-import { extractPullRequestIdentifier } from "./extractPullRequestIdentifier";
+import { extractPullRequestIdentifier } from "../extractPullRequestIdentifier";
 
 export const getRemotePullRequestFiles = async (
   remotePullRequest: string

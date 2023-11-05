@@ -26,8 +26,8 @@ export const getYargs = async (): Promise<ReviewArgs> => {
   const argv = yargs
     .option("ci", {
       description:
-        "Indicates that the script is running on a CI environment. Specifies which platform the script is running on, 'github' or 'gitlab'. Defaults to 'github'.",
-      choices: ["github", "gitlab"],
+        "Indicates that the script is running on a CI environment. Specifies which platform the script is running on, 'github', 'gitlab' or 'bitbucket'. Defaults to 'github'.",
+      choices: ["github", "gitlab", "bitbucket"],
       type: "string",
       coerce: (arg: string | undefined) => {
         return arg || "github";
@@ -49,7 +49,7 @@ export const getYargs = async (): Promise<ReviewArgs> => {
     .option("model", {
       description: "The model to use for generating the review.",
       type: "string",
-      default: "gpt-4",
+      default: "gpt-3.5-turbo-16k",
     })
     .option("reviewType", {
       description:
@@ -80,6 +80,11 @@ export const getYargs = async (): Promise<ReviewArgs> => {
       choices: ["openai", "bedrock"],
       type: "string",
       default: "openai",
+    })
+    .option("sourcePath", {
+      description: "Path to the directory containing the files to review",
+      type: "string",
+      default: "./",
     })
     .command("review", "Review the pull request.")
     .command("configure", "Configure the script.")

@@ -19,3 +19,4 @@ cdk.context.json
 .cdk.staging
 cdk.out/
 cdk.context.json
+package-lock.json

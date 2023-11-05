@@ -64,3 +64,26 @@ export const getGitLabEnvVariables = (): Record<string, string> => {
     mergeRequestIIdString: process.env.CI_MERGE_REQUEST_IID ?? "",
   };
 };
+
+export const getBitbucketEnvVariables = (): Record<string, string> => {
+  const missingVars = [
+    "BITBUCKET_TOKEN",
+    "BITBUCKET_WORKSPACE",
+    "BITBUCKET_REPO_SLUG",
+    "BITBUCKET_PULL_REQUEST_ID",
+  ].filter((varName) =>!process.env[varName]);
+
+  if (missingVars.length > 0) {
+    logger.error(`Missing environment variables: ${missingVars.join(", ")}`);
+    throw new Error(
+      "One or more Bitbucket environment variables are not set. Did you set up your Bitbucket environment variables: BITBUCKET_TOKEN, BITBUCKET_WORKSPACE_ID and BITBUCKET_PULL_REQUEST_ID?"
+    );
+  }
+
+  return {
+    bitbucketToken: process.env.BITBUCKET_TOKEN ?? "",
+    bitbucketWorkspace: process.env.BITBUCKET_WORKSPACE ?? "",
+    bitbucketRepoSlug: process.env.BITBUCKET_REPO_SLUG ?? "",
+    bitbucketPullRequestId: process.env.BITBUCKET_PULL_REQUEST_ID ?? "",
+  }
+}

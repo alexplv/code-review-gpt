@@ -22,7 +22,7 @@ const main = async () => {
     case "review": {
       const { review } = await import("./review");
       const { getReviewFiles } = await import("./common/utils/getReviewFiles");
-      const files = await getReviewFiles(argv.ci, argv.remote);
+      const files = await getReviewFiles(argv.ci, argv.remote, argv.sourcePath);
       await review(argv, files, openAIApiKey);
       break;
     }
@@ -38,6 +38,6 @@ const main = async () => {
 };
 
 main().catch((error) => {
-  logger.error(`Error: ${JSON.stringify(error)}`);
+  logger.error(`Error: ${error}`);
   process.exit(1);
 });
