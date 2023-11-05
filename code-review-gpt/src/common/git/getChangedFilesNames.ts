@@ -10,8 +10,8 @@ export const getChangedFilesNamesCommand = (
 ): string => {
   if (isCi === PlatformOptions.GITHUB) {
     const { githubSha, baseSha } = getGitHubEnvVariables();
-  } else if (isCi === PlatformOptions.GITLAB) {
     return `git diff --name-only --diff-filter=AMRT ${baseSha} ${githubSha}`;
+  } else if (isCi === PlatformOptions.GITLAB) {
     const { gitlabSha, mergeRequestBaseSha } = getGitLabEnvVariables();
     return `git diff --name-only --diff-filter=AMRT ${mergeRequestBaseSha} ${gitlabSha}`;
   } else if (sourcePath !== undefined) {
