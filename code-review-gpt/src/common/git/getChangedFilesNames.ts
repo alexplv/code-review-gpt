@@ -1,24 +1,23 @@
 import { exec } from "child_process";
 import { join } from "path";
 
-// import { getGitHubEnvVariables, getGitLabEnvVariables } from "../../config";
-// import { PlatformOptions } from "../types";
+import { getGitHubEnvVariables, getGitLabEnvVariables } from "../../config";
+import { PlatformOptions } from "../types";
 
 export const getChangedFilesNamesCommand = (
   isCi: string | undefined,
   sourcePath: string | undefined = './'
 ): string => {
-  // if (isCi === PlatformOptions.GITHUB) {
-  //   const { githubSha, baseSha } = getGitHubEnvVariables();
-
-  // } else if (isCi === PlatformOptions.GITLAB) {
-  //   return `git diff --name-only --diff-filter=AMRT ${baseSha} ${githubSha}`;
-  //   const { gitlabSha, mergeRequestBaseSha } = getGitLabEnvVariables();
-
-  //   return `git diff --name-only --diff-filter=AMRT ${mergeRequestBaseSha} ${gitlabSha}`;
-  // }
-
-  return `git -C ${sourcePath} diff --name-only --diff-filter=AMRT --cached`;
+  if (isCi === PlatformOptions.GITHUB) {
+    const { githubSha, baseSha } = getGitHubEnvVariables();
+  } else if (isCi === PlatformOptions.GITLAB) {
+    return `git diff --name-only --diff-filter=AMRT ${baseSha} ${githubSha}`;
+    const { gitlabSha, mergeRequestBaseSha } = getGitLabEnvVariables();
+    return `git diff --name-only --diff-filter=AMRT ${mergeRequestBaseSha} ${gitlabSha}`;
+  } else if (sourcePath !== undefined) {
+    return `git -C ${sourcePath} diff --name-only --diff-filter=AMRT --cached`;
+  }
+  return "git diff --name-only --diff-filter=AMRT --cached";
 };
 
 export const getChangedFilesNames = async (
